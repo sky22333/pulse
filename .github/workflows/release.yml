@@ -49,13 +49,9 @@ jobs:
       - name: 构建
         run: cargo +stable build --release --locked
 
-      - name: 打包
+      - name: 准备发布文件
         shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Path package | Out-Null
-          Copy-Item target/release/pulse.exe package/Pulse.exe
-          Copy-Item README.md package/README.md
-          Compress-Archive -Path package/* -DestinationPath Pulse-Windows-x64.zip
+        run: Copy-Item target/release/pulse.exe Pulse.exe
 
       - name: 发布
         uses: softprops/action-gh-release@v3
@@ -63,6 +59,6 @@ jobs:
           tag_name: ${{ inputs.tag }}
           target_commitish: ${{ github.sha }}
           name: ${{ inputs.tag }}
-          body: Windows 版本。下载并解压后运行 Pulse.exe。
-          files: Pulse-Windows-x64.zip
+          body: Windows 版本。下载并运行 Pulse.exe。
+          files: Pulse.exe
           fail_on_unmatched_files: true
