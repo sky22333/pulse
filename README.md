@@ -1,0 +1,22 @@
+# Pulse
+
+Pulse 是一款 Windows 鼠标与键盘输入分析工具。
+
+## 使用方法
+
+1. 打开 `Pulse.exe`，在顶部选择鼠标或键盘。
+2. 点击开始图标，然后持续移动鼠标或按下键盘按键。程序会自动选择第一个产生输入的设备。
+3. 点击停止图标查看分析结果；将鼠标移近图表上的点可查看对应数值。
+4. 使用顶部的文件夹和下载图标，可以打开或保存 Pulse 录制文件。
+
+鼠标结果显示测试期间的输入事件速率；移动不连续、系统调度和设备状态都可能影响结果。录制文件包含鼠标移动数据或按键扫描码，分享前请留意隐私。
+
+## 图标许可
+
+程序图标基于 [Lucide Activity](https://github.com/lucide-icons/lucide/blob/main/icons/activity.svg)，遵循 ISC 许可证。
+
+Copyright (c) 2026 Lucide Icons and Contributors
+
+Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
