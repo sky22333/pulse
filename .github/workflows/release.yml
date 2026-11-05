@@ -36,9 +36,11 @@ jobs:
           }
           git check-ref-format "refs/tags/$env:RELEASE_TAG"
           if ($LASTEXITCODE -ne 0) { throw '标签格式无效。' }
-          $result = gh api "repos/$env:GITHUB_REPOSITORY/git/ref/tags/$env:RELEASE_TAG" 2>&1
-          if ($LASTEXITCODE -eq 0) { throw '标签已存在，请使用新标签。' }
-          if ("$result" -notmatch 'HTTP 404') { throw "检查标签失败：$result" }
+          $tagPath = ($env:RELEASE_TAG -split '/' | ForEach-Object { [uri]::EscapeDataString($_) }) -join '/'
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = 'application/vnd.github+json' }
+          $response = Invoke-WebRequest -Uri "$env:GITHUB_API_URL/repos/$env:GITHUB_REPOSITORY/git/ref/tags/$tagPath" -Headers $headers -SkipHttpErrorCheck
+          if ($response.StatusCode -eq 200) { throw '标签已存在，请使用新标签。' }
+          if ($response.StatusCode -ne 404) { throw "检查标签失败：HTTP $($response.StatusCode)" }
 
       - name: 更新 Rust 稳定版
         run: rustup update stable --no-self-update
