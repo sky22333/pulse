@@ -1,0 +1,68 @@
+name: 构建并发布
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 发布标签（例如 v1.0.0）
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: 构建 Windows 版本
+    runs-on: windows-latest
+    steps:
+      - name: 检出源码
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: 检查标签
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          if (-not $env:RELEASE_TAG -or $env:RELEASE_TAG.StartsWith('-')) {
+            throw '请输入有效的标签。'
+          }
+          git check-ref-format "refs/tags/$env:RELEASE_TAG"
+          if ($LASTEXITCODE -ne 0) { throw '标签格式无效。' }
+          $result = gh api "repos/$env:GITHUB_REPOSITORY/git/ref/tags/$env:RELEASE_TAG" 2>&1
+          if ($LASTEXITCODE -eq 0) { throw '标签已存在，请使用新标签。' }
+          if ("$result" -notmatch 'HTTP 404') { throw "检查标签失败：$result" }
+
+      - name: 更新 Rust 稳定版
+        run: rustup update stable --no-self-update
+
+      - name: 测试
+        run: cargo +stable test --locked
+
+      - name: 构建
+        run: cargo +stable build --release --locked
+
+      - name: 打包
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path package | Out-Null
+          Copy-Item target/release/pulse.exe package/Pulse.exe
+          Copy-Item README.md package/README.md
+          Compress-Archive -Path package/* -DestinationPath Pulse-Windows-x64.zip
+
+      - name: 发布
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ inputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ inputs.tag }}
+          body: Windows 版本。下载并解压后运行 Pulse.exe。
+          files: Pulse-Windows-x64.zip
+          fail_on_unmatched_files: true
