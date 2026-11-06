@@ -1,3 +1,5 @@
+#![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
+
 extern crate gpui_kit as gpui;
 mod analysis;
 mod capture;
